@@ -3,12 +3,12 @@
 const sharpNotes= ["c", "^c", "d", "^d", "e", "f", "^f", "g", "^g", "a", "^a", "b" ]
 const flatNotes= ["c", "_d", "d", "_e", "e", "f", "_g", "g", "_a", "a", "_b", "b" ]
 
-const sharpSigs= ["G", "D", "A", "E", "B", "F#"]
+const sharpMajSigs= ["G", "D", "A", "E", "B", "F#"]
+const sharpMinSigs= ["Emin", "Bmin", "F#min", "C#min", "G#min", "D#min"]
 const sharps= [6,1,8,3,10,5]
-const sharpNaturals= [5,0,7,2,9,4]
-const flatSigs= ["F", "Bb", "Eb", "Ab", "Db", "Gb"]
+const flatMajSigs= ["F", "Bb", "Eb", "Ab", "Db", "Gb"]
+const flatMinSigs= ["Dmin", "Gmin", "Cmin", "Fmin", "Bbmin", "Ebmin"]
 const flats= [10,3,8,1,6,11]
-const flatNaturals= [11,4,9,2,6,0]
 
 ////////////////////////////////////////////////////////////
 //
@@ -70,29 +70,27 @@ function getMIDI_note_name(note) {
     // from https://en.wikipedia.org/wiki/Key_signature#/media/File:Circle_of_fifths_deluxe_4.svg
     // TODO: add minor signatures 
 
-    var i= sharpSigs.indexOf(sig) // is it a sharp sig?
+    var i= sharpMajSigs.indexOf(sig) // is it a major sharp sig?
+    if (i<0) i= sharpMinSigs.indexOf(sig) // or the equivalent minor?
     if (i>=0) {
         var shs= sharps.slice(0,i+1) // get the sharps for this sig
 
-        if (shs.indexOf(pos)!=-1) 
+        if (shs.includes(pos)) 
             modifier-- // remove sharp since it's already in the sig
-
-        var nats= sharpNaturals.slice(0,i+1) // get the naturals for this sig
-        if (nats.indexOf(pos)!=-1) 
+        else if (shs.includes(pos+1)) // naturals precede sharps
             prefix="=" // add natural to override the sig
   
     }
 
-    i= flatSigs.indexOf(sig) // flat sig?
+    i= flatMajSigs.indexOf(sig) // flat sig?
+    if (i<0) i= flatMinSigs.indexOf(sig) // or the equivalent minor?
     var isFlat= i>=0
     if (isFlat) {
         var fls= flats.slice(0,i+1) // get the flats for this sig
 
         if (fls.indexOf(pos)!=-1)
             modifier++ // remove flat since it's already in the sig
-
-        nats= flatNaturals.slice(0,i+1) // get the naturals for this sig
-        if (nats.indexOf(pos)!=-1)
+        else if (fls.includes(pos-1)) // naturals follow flats
             prefix="=" // add natural to override the sig
   
     }
