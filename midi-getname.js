@@ -15,14 +15,23 @@ const flats= [10,3,8,1,6,11]
 // get the signature from the textarea
 //
 ////////////////////////////////////////////////////////////
-function getSignature() {
-    var line= gTheABC.value.match(/^K: [a-zA-Z]+/gm)
-    if ( line.length>0 ){
-        var result= line[0].substr(3)
-        console.log("Declared signature: "+ result)
+function getHeaderValue(key) {
+    var regex=  new RegExp("^" + key + ":(.*)", "m");
+    var matches= gTheABC.value.match(regex)
+    if ( matches.length>1 ){
+        var result= matches[1].trim() // skip key and colon
+        //console.log("Header "+ key+ " has value: "+ result)
         return result
     }
-    return "C" // assume Cmaj by default
+    return null
+} 
+function getSignature() {
+    var sig= getHeaderValue("K")
+    if ( sig === null )
+        return "C" // assume Cmaj by default
+     
+    console.log("Declared signature: "+ sig)
+    return sig 
 } 
 
 ////////////////////////////////////////////////////////////
